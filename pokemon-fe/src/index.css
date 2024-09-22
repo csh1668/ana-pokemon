@@ -1,13 +1,105 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  /* overflow: hidden; */
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.appContainer {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-image: url("https://www.pokemonsleep.net/wp/wp-content/uploads/2023/05/pokemon-img-1.png");
+  background-size: auto;
+  background-position: center;
+  background-attachment: fixed;  /* 배경 고정 */
+}
+
+.Button {
+  margin: 10px;
+  background: rgb(255, 255, 255, 0.8);
+  border: none;
+  cursor: pointer;
+  width: fit-content;
+  height: fit-content;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.searchBar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.searchBar select, .searchBar input[type="text"] {
+  margin-right: 10px;
+  padding: 5px;
+}
+
+.searchBar input[type="submit"] {
+  padding: 5px 10px;
+}
+
+.pokemonGridContainer {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.pokemonGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+.pokemonCard {
+  background-color: rgb(255, 255, 255, 0.8);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.pokemonCard:hover {
+  transform: scale(1.05);
+}
+
+.pokemonCard img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.pokemonName {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin: 10px 0 5px;
+}
+
+.pokemonId {
+  font-size: 14px;
+  color: #777;
+}
+
+.pokemonType {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.pokemonStats {
+  font-size: 12px;
+  color: #999;
+}
+
+.pokemonDetail {
+  padding: 20px;
+  text-align: center;
+}
+
+.pokemonDetail img {
+  margin: 20px 0;
 }
