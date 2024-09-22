@@ -37,4 +37,12 @@ public class PokemonTypeRelation extends BaseTimeEntity {
                 .type(type)
                 .build();
     }
+
+    @Override
+    public String toString() {
+        return "PokemonTypeRelation(id=" + this.getId()
+                + ", pokemon=" + this.getPokemon().getName()
+                + ", type=" + this.getType().getName()
+                + ")";
+    }
 }

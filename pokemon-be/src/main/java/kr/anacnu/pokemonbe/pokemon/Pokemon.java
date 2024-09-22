@@ -15,6 +15,10 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(indexes = {
+        @Index(name = "idx_pokedex_num", columnList = "pokedexNum"),
+        @Index(name = "idx_name", columnList = "name")
+})
 public class Pokemon extends BaseTimeEntity {
     /**
      * DB에 저장되는 ID. 실제 포켓몬 도감 번호와는 전혀 다릅니다.
@@ -38,17 +42,19 @@ public class Pokemon extends BaseTimeEntity {
     /**
      * 포켓몬의 타입 목록
      */
-    @OneToMany(mappedBy = "pokemon", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pokemon", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PokemonTypeRelation> types;
 
     /**
      * 포켓몬의 키(m)
      */
+    @Column(nullable = false)
     private Float height;
 
     /**
      * 포켓몬의 무게(kg)
      */
+    @Column(nullable = false)
     private Float weight;
 
     /**
@@ -65,5 +71,17 @@ public class Pokemon extends BaseTimeEntity {
         this.height = height;
         this.weight = weight;
         this.imageUrl = imageUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "Pokemon(id=" + this.getId()
+                + ", name=" + this.getName()
+                + ", pokedexNum=" + this.getPokedexNum()
+                + ", types=" + this.getTypes()
+                + ", height=" + this.getHeight()
+                + ", weight=" + this.getWeight()
+                + ", imageUrl=" + this.getImageUrl()
+                + ")";
     }
 }

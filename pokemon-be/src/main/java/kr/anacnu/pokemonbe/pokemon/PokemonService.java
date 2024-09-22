@@ -5,8 +5,7 @@ import kr.anacnu.pokemonbe.pokemon_type.PokemonTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.Hashtable;
 
 @Service
 @RequiredArgsConstructor
@@ -14,20 +13,40 @@ public class PokemonService {
     private final PokemonRepository pokemonRepository;
     private final PokemonTypeRepository pokemonTypeRepository;
 
-    public Optional<Pokemon> findPokemonByName(String name) {
-        return pokemonRepository.findByName(name);
+    private final Hashtable<String, PokemonType> typeCached = new Hashtable<>();
+
+    public Pokemon findPokemonByName(String name) {
+        return pokemonRepository.findByName(name).orElse(null);
     }
 
-    /**
-     * (테스트용) 타입을 하나 가진 포켓몬을 추가합니다.
-     * TODO: 입력값과 반환값을 DTO로 바꾸기
-     * @param name
-     * @param typeName
-     * @return
-     */
-    public Pokemon addPokemon(String name, String typeName) {
-        var type = pokemonTypeRepository.findByName(typeName);
-        var types = new ArrayList<PokemonType>(); types.add(type);
-        return pokemonRepository.save(Pokemon.builder().name(name).types(types).pokedexNum(1L).build());
+    public Pokemon addPokemon(PokemonDto dto) {
+        var existingPokemon = findPokemonByName(dto.getName());
+        if (existingPokemon == null) {
+            var types = dto.getTypes().stream().map(this::findPokemonTypeByName).toList();
+            var newPokemon = Pokemon.builder()
+                    .pokedexNum(dto.getPokedexNum())
+                    .name(dto.getName())
+                    .height(dto.getHeight())
+                    .weight(dto.getWeight())
+                    .imageUrl(dto.getImageUrl())
+                    .types(types)
+                    .build();
+            return pokemonRepository.save(newPokemon);
+        }
+        // 값 업데이트는 아직 지원하지 않습니다.
+        System.out.println("이미 존재하는 포켓몬: " + existingPokemon.getName());
+        return existingPokemon;
+    }
+
+    private PokemonType findPokemonTypeByName(String name) {
+        if (typeCached.containsKey(name)) {
+            return typeCached.get(name);
+        } else {
+            var type = pokemonTypeRepository.findByName(name).orElse(null);
+            if (type != null) {
+                typeCached.put(name, type);
+            }
+            return type;
+        }
     }
 }
