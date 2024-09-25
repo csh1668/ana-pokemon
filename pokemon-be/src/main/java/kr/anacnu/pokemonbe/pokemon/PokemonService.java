@@ -1,11 +1,17 @@
 package kr.anacnu.pokemonbe.pokemon;
 
 import kr.anacnu.pokemonbe.pokemon_type.PokemonType;
+import kr.anacnu.pokemonbe.pokemon_type.PokemonTypeRelation;
 import kr.anacnu.pokemonbe.pokemon_type.PokemonTypeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.Hashtable;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -13,11 +19,9 @@ public class PokemonService {
     private final PokemonRepository pokemonRepository;
     private final PokemonTypeRepository pokemonTypeRepository;
 
-    private final Hashtable<String, PokemonType> typeCached = new Hashtable<>();
+    private final int PAGE_SIZE = 50;
 
-    public Pokemon findPokemonByName(String name) {
-        return pokemonRepository.findByName(name).orElse(null);
-    }
+    private final Hashtable<String, PokemonType> typeCached = new Hashtable<>();
 
     public Pokemon addPokemon(PokemonDto dto) {
         var existingPokemon = findPokemonByName(dto.getName());
@@ -48,5 +52,34 @@ public class PokemonService {
             }
             return type;
         }
+    }
+
+    public PagedModel<PokemonDto> getPokemons(int page, String kw) {
+        List<Sort.Order> sorts = List.of(Sort.Order.asc("pokedexNum"));
+        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by(sorts));
+        var spec = nameLike(kw);
+        var ret = pokemonRepository.findAll(spec, pageable).map(PokemonDto::new);
+
+        return new PagedModel<>(ret);
+    }
+
+    private Specification<Pokemon> nameLike(String kw) {
+        return (b, query, cb) -> {
+            query.distinct(true);
+            return cb.or(cb.like(b.get("name"), "%" + kw + "%"));
+        };
+    }
+
+    public PokemonDto getPokemonByName(String name) {
+        var pokemon = findPokemonByName(name);
+        if (pokemon == null) {
+            return null;
+        } else {
+            return new PokemonDto(pokemon);
+        }
+    }
+
+    private Pokemon findPokemonByName(String name) {
+        return pokemonRepository.findByName(name).orElse(null);
     }
 }
