@@ -19,7 +19,7 @@ public class PokemonService {
     private final PokemonRepository pokemonRepository;
     private final PokemonTypeRepository pokemonTypeRepository;
 
-    private final int PAGE_SIZE = 50;
+    private static final int PAGE_SIZE = 50;
 
     private final Hashtable<String, PokemonType> typeCached = new Hashtable<>();
 
