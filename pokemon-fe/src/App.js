@@ -16,6 +16,7 @@ function App() {
     })
     .then((res)=>res.data.content)
     .then((res)=>{
+      console.log(res)
       setVisiblePokemons(res)
     })
     .catch((err)=>{
@@ -75,7 +76,7 @@ function App() {
 
                   if (index === visiblePokemons.length - 1) {
                     return (
-                      <Link to={`/pokemon/${pokemonId}`} key={pokemonId}>
+                      <Link to={`/pokemon/${pokemonId}`} key={pokemonInfo.pokedexNum}>
                         <div ref={lastPokemonElementRef} className="pokemonCard" key={pokemonInfo.pokedexNum}>
                           <img src={pokemonInfo.gifUrl || pokemonInfo.imageUrl} width="100" height="100" alt={pokemonInfo.name}/>
                           <p className="pokemonId">No.{'0'.repeat(4 - String(pokemonInfo.pokedexNum).length) + pokemonInfo.pokedexNum}</p>
@@ -85,7 +86,8 @@ function App() {
                     );
                   } else {
                     return (
-                      <Link to={`/pokemon/${pokemonId}`} key={pokemonId}>
+                      <Link to={`/pokemon/${pokemonId}`} key={pokemonInfo.pokedexNum}>
+                        {console.log(`pokemon : ${pokemonInfo.name}`)}
                         <div className="pokemonCard" key={pokemonInfo.pokedexNum}>
                           <img src={pokemonInfo.gifUrl || pokemonInfo.imageUrl} width="100" height="100" alt={pokemonInfo.name}/>
                           <p className="pokemonId">No.{'0'.repeat(4 - String(pokemonInfo.pokedexNum).length) + pokemonInfo.pokedexNum}</p>
