@@ -6,41 +6,20 @@ import PokemonDetail from './PokemonDetail.js'
 import axios from 'axios'
 
 function App() {
-  const [pokemonList, setPokemonList] = useState([])  // public/pokemon_data.csv 에서 불러온 정보 저장용 (임시)
   const [visiblePokemons, setVisiblePokemons] = useState([])  // 현재 화면에 보여줄 포켓몬
-  const [page, setPage] = useState(1)  // 현재 페이지
+  const [page, setPage] = useState(0)  // 현재 페이지
   const observerRef = useRef()  // IntersectionObserver ref
   const ITEMS_PER_PAGE = 18  // 한 번에 보여줄 포켓몬 수 (3*3)
-
-  useEffect(()=>{
-    fetch('/pokemon_data.csv')
-    .then((result)=>result.text())  // CSV -> txt
-    .then((csvText)=>{
-      Papa.parse(csvText, {
-        header: true,  // 첫 줄 키로 사용
-        skipEmptyLines: true, // 빈 줄 무시
-        complete: (result)=>{
-          setPokemonList(result.data)  
-          setVisiblePokemons(result.data.slice(0, ITEMS_PER_PAGE))
-        },
-        error: (error)=>{
-          console.error('Error parsing CSV: ', error)
-        }
-      })
-    })
-    .catch((error)=>{
-      console.error('Error fetching CSV file: ', error)
-    })
-  }, [])
 
   // Backend API ('/list') 를 통한 초기 데이터 획득
   useEffect(()=>{
     axios({
-      url: '/proxy/list'
+      url: '/proxy/list?page=0'
     })
     .then((res)=>res.data.content)
     .then((res)=>{
       console.log(res)
+      setVisiblePokemons(res)
     })
     .catch((err)=>{
       console.log('API 통신 실패 : ', err)
@@ -50,12 +29,17 @@ function App() {
   // 스크롤이 페이지 끝에 도달하면 추가 데이터를 로드
   const loadMorePokemons = useCallback(()=>{
     const nextPage = page + 1
-    const startIdx = page * ITEMS_PER_PAGE
-    const endIdx = startIdx + ITEMS_PER_PAGE
-    const morePokemons = pokemonList.slice(startIdx, endIdx)
 
-    setVisiblePokemons((previous)=>[...previous, ...morePokemons])  // 기존 데이터에 추가
-    setPage(nextPage)  // Page 추가
+    axios({
+      url: `/proxy/list?page=${nextPage}`
+    })
+    .then((res)=>res.data.content)
+    .then((res)=>{
+      console.log(`Page ${nextPage} : `)
+      console.log(res)
+      setVisiblePokemons((previous)=>[...previous, ...res])
+      setPage(nextPage)
+    })
   }, [page, pokemonList])
 
   // IntersectionObserver를 이용한 무한 스크롤 구현
@@ -63,7 +47,8 @@ function App() {
     if (observerRef.current)  observerRef.current.disconnect()
     
     observerRef.current = new IntersectionObserver((entries)=>{
-      if (entries[0].isIntersecting && pokemonList.length > visiblePokemons.length) {
+      console.log("ASDASDAAS")
+      if (entries[0].isIntersecting && page < 21) {
         loadMorePokemons()  // 마지막 요소가 보이면 추가적으로 로드
       }
     })
@@ -92,25 +77,26 @@ function App() {
             <div className="pokemonGridContainer">
               <div className='pokemonGrid'>
                 {visiblePokemons.map((pokemonInfo, index)=>{
-                  const pokemonId = pokemonInfo.ID
+                  const pokemonId = pokemonInfo.pokedexNum
 
                   if (index === visiblePokemons.length - 1) {
                     return (
-                      <Link to={`/pokemon/${pokemonId}`} key={pokemonInfo.ID}>
-                        <div ref={lastPokemonElementRef} className="pokemonCard" key={pokemonInfo.ID}>
-                          <img src={pokemonInfo.GIF_URL || pokemonInfo.IMAGE_URL} width="100" height="100" alt={pokemonInfo.Name}/>
-                          <p className="pokemonId">No.{'0'.repeat(4-pokemonInfo.ID.length) + pokemonInfo.ID}</p>
-                          <p className="pokemonName">{pokemonInfo.Name}</p>
+                      <Link to={`/pokemon/${pokemonId}`} key={pokemonInfo.name}>
+                        <div ref={lastPokemonElementRef} className="pokemonCard" key={pokemonInfo.pokedexNum}>
+                          <img src={pokemonInfo.gifUrl || pokemonInfo.imageUrl} width="100" height="100" alt={pokemonInfo.name}/>
+                          <p className="pokemonId">No.{'0'.repeat(4 - String(pokemonInfo.pokedexNum).length) + pokemonInfo.pokedexNum}</p>
+                          <p className="pokemonName">{pokemonInfo.name}</p>
                         </div>
                       </Link>
                     );
                   } else {
                     return (
-                      <Link to={`/pokemon/${pokemonId}`} key={pokemonInfo.ID}>
-                        <div className="pokemonCard" key={pokemonInfo.ID}>
-                          <img src={pokemonInfo.GIF_URL || pokemonInfo.IMAGE_URL} width="100" height="100" alt={pokemonInfo.Name}/>
-                          <p className="pokemonId">No.{'0'.repeat(4-pokemonInfo.ID.length) + pokemonInfo.ID}</p>
-                          <p className="pokemonName">{pokemonInfo.Name}</p>
+                      <Link to={`/pokemon/${pokemonId}`} key={pokemonInfo.name}>
+                        {console.log(`pokemon : ${pokemonInfo.name}`)}
+                        <div className="pokemonCard" key={pokemonInfo.pokedexNum}>
+                          <img src={pokemonInfo.gifUrl || pokemonInfo.imageUrl} width="100" height="100" alt={pokemonInfo.name}/>
+                          <p className="pokemonId">No.{'0'.repeat(4 - String(pokemonInfo.pokedexNum).length) + pokemonInfo.pokedexNum}</p>
+                          <p className="pokemonName">{pokemonInfo.name}</p>
                         </div>
                       </Link>
                     );
