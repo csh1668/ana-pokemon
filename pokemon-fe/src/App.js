@@ -15,35 +15,46 @@ function App() {
 
   const [option, setOption] = useState('name')  // 검색 옵션
   const [keyWord, setKeyWord] = useState('')  //  검색 키워드
+  const [isSearch, setIsSearch] = useState(true)  // 검색
 
-  // Backend API ('/list') 를 통한 초기 데이터 획득
+  // Backend API ('/list') 를 통한 초기 데이터 획득 및 검색 시 데이터 획득
   useEffect(()=>{
     axios({
-      url: `/proxy/list?page=0&kw=${keyWord}&kind=${option}`
+      url: `/proxy/list?page=${page}&kw=${keyWord}&kind=${option}`
     })
     .then((res)=>res.data.content)
     .then((res)=>{
+      console.log(`page : ${page} kw : ${keyWord} kind : ${option}`)
       setVisiblePokemons(res)
     })
     .catch((err)=>{
       console.log('API 통신 실패 : ', err)
     })
-  }, [])
+  }, [isSearch])
+
+   // page가 넘어갈 때 마다 데이터를 로드하도록 함.
+   useEffect(()=>{
+    axios({
+      url: `/proxy/list?page=${page}&kw=${keyWord}&kind=${option}`
+    })
+    .then((res)=>res.data.content)
+    .then((res)=>{
+      if (page === 0) {
+        setVisiblePokemons(res)
+      } else {
+        setVisiblePokemons((previous)=>[...previous, ...res])
+      }
+    })
+    .catch((err)=>{
+      console.log('API 통신 실패 : ', err)
+    })
+  }, [page])
 
   // 스크롤이 페이지 끝에 도달하면 추가 데이터를 로드
   const loadMorePokemons = useCallback(()=>{
     const nextPage = page + 1
-
-    axios({
-      url: `/proxy/list?page=${nextPage}&kw=${keyWord}&kind=${option}`
-    })
-    .then((res)=>res.data.content)
-    .then((res)=>{
-      console.log(`page : ${page} kw : ${keyWord} kind : ${option}`)
-      console.log(res)
-      setVisiblePokemons((previous)=>[...previous, ...res])
-      setPage(nextPage)
-    })
+    console.log(`page : ${page} nextPage : ${nextPage}`)
+    setPage(nextPage)
   }, [page])
 
   // IntersectionObserver를 이용한 무한 스크롤 구현
@@ -59,53 +70,54 @@ function App() {
     if (node) observerRef.current.observe(node)
   }, [loadMorePokemons, visiblePokemons.length])
 
-    // 팝업 열기/닫기
-    const togglePopup = () => {
-      setIsOpen(!isOpen)
-    }
+  // 팝업 열기/닫기
+  const togglePopup = () => {
+    setIsOpen(!isOpen)
+  }
 
-    // 팝업 바깥을 클릭했을 때 닫기
-    const closePopup = (e) => {
-      if (e.target.className === 'popup') {
-        setIsOpen(false)
+  // 팝업 바깥을 클릭했을 때 닫기
+  const closePopup = (e) => {
+    if (e.target.className === 'popup') {
+      setIsOpen(false)
+    }
+  }
+
+  // 입력 처리
+  const handleLogin = (e) => {
+    e.preventDefault()
+    // 로그인 로직 작성
+    axios({
+      method: "POST",
+      url: `/proxy/sign-in`,
+      data: {
+        studentId: userId,
+        password: password
       }
-    }
-  
-    // 입력 처리
-    const handleLogin = (e) => {
-      e.preventDefault()
-      // 로그인 로직 작성
-      axios({
-        method: "POST",
-        url: `/proxy/sign-in`,
-        data: {
-          studentId: userId,
-          password: password
-        }
-      })
-      .then((res)=>res.data)
-      .then((res)=>{
-        console.log(`token : ${res.token}`)
-        console.log(`meesage : ${res.message}`)
-  
-        if (res.token) {
-          alert('로그인 성공')
-        } else {
-          alert('로그인 실패')
-        }
-      })
-  
-      console.log(`Id : ${userId}, Pw : ${password}`)
-      setIsOpen(false) // 팝업 닫기
-    }
+    })
+    .then((res)=>res.data)
+    .then((res)=>{
+      console.log(`token : ${res.token}`)
+      console.log(`meesage : ${res.message}`)
+
+      if (res.token) {
+        alert('로그인 성공')
+      } else {
+        alert('로그인 실패')
+      }
+    })
+
+    console.log(`Id : ${userId}, Pw : ${password}`)
+    setIsOpen(false) // 팝업 닫기
+  }
+
+  const clickSearch = ()=>{
+    setIsSearch(!isSearch)
+    setPage(0)
+  }
 
   // 검색 처리
   const handleClick = () => {
-    setPage(-1)
-    setVisiblePokemons([])
-    loadMorePokemons()
-    console.log(`option : ${option}, text : ${keyWord}`)
-    console.log(visiblePokemons)
+    clickSearch()
   }
 
   return (
