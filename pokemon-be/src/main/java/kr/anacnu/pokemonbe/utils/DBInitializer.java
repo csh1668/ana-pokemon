@@ -34,8 +34,9 @@ public class DBInitializer {
 
         for (int i = 1; i < typesData.size(); i++) {
             var typeData = typesData.get(i);
-            System.out.println(pokemonTypeService.addOrUpdatePokemonType(typeData[0], typeData[1]));
+            pokemonTypeService.addOrUpdatePokemonType(typeData[0], typeData[1]);
         }
+        System.out.println(typesData.size() + " types are added or updated");
 
 //        System.out.println(pokemonTypeService.getPokemonsByTypeName("풀"));
     }
@@ -58,9 +59,12 @@ public class DBInitializer {
                     .height(Float.parseFloat(pokemonData[2]))
                     .weight(Float.parseFloat(pokemonData[3]))
                     .imageUrl(pokemonData[5])
+                    .gifUrl(pokemonData.length > 6 ? pokemonData[6] : null)
                     .build();
 
-//            System.out.println(pokemonService.addPokemon(dto));
+            pokemonService.addPokemon((dto));
+        //    System.out.println(pokemonService.addPokemon(dto));
         }
+        System.out.println(pokemonsData.size() + " pokemons are added or updated");
     }
 }

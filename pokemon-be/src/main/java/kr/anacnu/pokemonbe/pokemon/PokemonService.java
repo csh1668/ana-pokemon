@@ -33,6 +33,7 @@ public class PokemonService {
                     .height(dto.getHeight())
                     .weight(dto.getWeight())
                     .imageUrl(dto.getImageUrl())
+                    .gifUrl(dto.getGifUrl())
                     .types(types)
                     .build();
             return pokemonRepository.save(newPokemon);
