@@ -16,7 +16,6 @@ function App() {
     })
     .then((res)=>res.data.content)
     .then((res)=>{
-      console.log(res)
       setVisiblePokemons(res)
     })
     .catch((err)=>{
@@ -51,13 +50,43 @@ function App() {
     if (node) observerRef.current.observe(node)
   }, [loadMorePokemons, visiblePokemons.length])
 
+  const loginPrompt = ()=>{
+    const userId = prompt('ID를 입력해주세요.')
+    if (userId === null) return;
+
+    const userPw = prompt('PW를 입력해주세요.')
+    if (userPw === null) return;
+
+    axios({
+      method: "POST",
+      url: `/proxy/sign-in`,
+      data: {
+        studentId: userId,
+        password: userPw
+      }
+    })
+    .then((res)=>res.data)
+    .then((res)=>{
+      console.log(`token : ${res.token}`)
+      console.log(`meesage : ${res.message}`)
+
+      if (res.token) {
+        alert('로그인 성공')
+      } else {
+        alert('로그인 실패')
+      }
+    })
+
+    console.log(`Id : ${userId}, Pw : ${userPw}`)
+  }
+
   return (
     <Router>
       <Routes>
         {/* 메인 페이지 */}
         <Route path="/" element = {
           <div className="appContainer">
-            <button type="button" className="Button">
+            <button type="button" className="Button" onClick={loginPrompt}>
               <img src="https://cdn-icons-png.flaticon.com/512/159/159833.png" width="50" height="50"/>
             </button>
 
@@ -87,7 +116,6 @@ function App() {
                   } else {
                     return (
                       <Link to={`/pokemon/${pokemonId}`} key={pokemonInfo.pokedexNum}>
-                        {console.log(`pokemon : ${pokemonInfo.name}`)}
                         <div className="pokemonCard" key={pokemonInfo.pokedexNum}>
                           <img src={pokemonInfo.gifUrl || pokemonInfo.imageUrl} width="100" height="100" alt={pokemonInfo.name}/>
                           <p className="pokemonId">No.{'0'.repeat(4 - String(pokemonInfo.pokedexNum).length) + pokemonInfo.pokedexNum}</p>
