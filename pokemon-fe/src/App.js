@@ -16,11 +16,12 @@ function App() {
   const [option, setOption] = useState('name')  // 검색 옵션
   const [keyWord, setKeyWord] = useState('')  //  검색 키워드
   const [isSearch, setIsSearch] = useState(true)  // 검색
+  const [order, setOrder] = useState('asc')
 
   // Backend API ('/list') 를 통한 초기 데이터 획득 및 검색 시 데이터 획득
   useEffect(()=>{
     axios({
-      url: `/proxy/list?page=${page}&kw=${keyWord}&kind=${option}`
+      url: `/proxy/list?page=${page}&kw=${keyWord}&kind=${option}&order=${order}`
     })
     .then((res)=>res.data.content)
     .then((res)=>{
@@ -35,7 +36,7 @@ function App() {
    // page가 넘어갈 때 마다 데이터를 로드하도록 함.
    useEffect(()=>{
     axios({
-      url: `/proxy/list?page=${page}&kw=${keyWord}&kind=${option}`
+      url: `/proxy/list?page=${page}&kw=${keyWord}&kind=${option}&order=${order}`
     })
     .then((res)=>res.data.content)
     .then((res)=>{
@@ -113,6 +114,7 @@ function App() {
   const clickSearch = ()=>{
     setIsSearch(!isSearch)
     setPage(0)
+    if(option == 'name' || option == 'name') {setOrder('asc')}
   }
 
   // 검색 처리
@@ -172,12 +174,21 @@ function App() {
                 <option>키</option>
                 <option>무게</option>
               </select>
-              <input 
-                type="text" 
-                placeholder='포켓몬 검색' 
-                value={keyWord}
-                onChange={(e) => setKeyWord(e.target.value)}
-                />
+              {(!(option === '키' || option === '무게') && (
+                <input 
+                  type="text" 
+                  placeholder='포켓몬 검색' 
+                  value={keyWord}
+                  onChange={(e) => setKeyWord(e.target.value)}
+                  />
+              )) || (
+                <select 
+                  value={order === 'asc' ? '오름차순' : '내림차순'} 
+                  onChange={(e) => {setOrder(e.target.value == '오름차순' ? 'asc' : 'desc')}}>
+                    <option value="오름차순">오름차순</option>
+                    <option value="내림차순">내림차순</option>
+                </select>
+              )}
               <input type="submit" value="검색" onClick={handleClick}/>
             </div>
 
