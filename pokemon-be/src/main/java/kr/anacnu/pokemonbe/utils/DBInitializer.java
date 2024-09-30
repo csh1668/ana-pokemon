@@ -60,7 +60,8 @@ public class DBInitializer {
                     .imageUrl(pokemonData[5])
                     .build();
 
-//            System.out.println(pokemonService.addPokemon(dto));
+            pokemonService.addPokemon((dto));
+        //    System.out.println(pokemonService.addPokemon(dto));
         }
     }
 }
