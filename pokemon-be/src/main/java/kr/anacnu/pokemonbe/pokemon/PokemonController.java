@@ -11,9 +11,13 @@ public class PokemonController {
 
     @GetMapping("/list")
     public ResponseEntity<?> listPokemons(@RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "") String kw) {
+                                          @RequestParam(defaultValue = "") String kw,
+                                          @RequestParam(defaultValue = "name") String kind,
+                                          @RequestParam(defaultValue = "asc") String order) {
         try {
-            return ResponseEntity.ok(pokemonService.getPokemons(page, kw));
+            boolean isAsc = order.equals("asc");
+            var searchType = PokemonSearchType.valueOf(kind.toUpperCase());
+            return ResponseEntity.ok(pokemonService.getPokemons(page, kw, searchType, isAsc));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
