@@ -9,14 +9,17 @@ function App() {
   const [page, setPage] = useState(0)  // 현재 페이지
   const observerRef = useRef()  // IntersectionObserver ref
 
-  const [isOpen, setIsOpen] = useState(false)
-  const [userId, setUserId] = useState('')
-  const [password, setPassword] = useState('')
+  const [isOpen, setIsOpen] = useState(false) //  팝업창 유무
+  const [userId, setUserId] = useState('')    //  입력받은 아이디
+  const [password, setPassword] = useState('')  // 입력받은 비밀번호
+
+  const [option, setOption] = useState('name')  // 검색 옵션
+  const [keyWord, setKeyWord] = useState('')  //  검색 키워드
 
   // Backend API ('/list') 를 통한 초기 데이터 획득
   useEffect(()=>{
     axios({
-      url: '/proxy/list?page=0'
+      url: `/proxy/list?page=0&kw=${keyWord}&kind=${option}`
     })
     .then((res)=>res.data.content)
     .then((res)=>{
@@ -32,10 +35,12 @@ function App() {
     const nextPage = page + 1
 
     axios({
-      url: `/proxy/list?page=${nextPage}`
+      url: `/proxy/list?page=${nextPage}&kw=${keyWord}&kind=${option}`
     })
     .then((res)=>res.data.content)
     .then((res)=>{
+      console.log(`page : ${page} kw : ${keyWord} kind : ${option}`)
+      console.log(res)
       setVisiblePokemons((previous)=>[...previous, ...res])
       setPage(nextPage)
     })
@@ -94,6 +99,15 @@ function App() {
       setIsOpen(false) // 팝업 닫기
     }
 
+  // 검색 처리
+  const handleClick = () => {
+    setPage(-1)
+    setVisiblePokemons([])
+    loadMorePokemons()
+    console.log(`option : ${option}, text : ${keyWord}`)
+    console.log(visiblePokemons)
+  }
+
   return (
     <Router>
       <Routes>
@@ -140,11 +154,19 @@ function App() {
             </button>
 
             <div className='searchBar'>
-              <select>
-                <option>타입</option>
+              <select value={option} onChange={(e) => setOption(e.target.value)}>
+                <option>name</option>
+                <option>type</option>
+                <option>키</option>
+                <option>무게</option>
               </select>
-              <input type="text" placeholder='포켓몬 검색'/>
-              <input type="submit" value="검색"/>
+              <input 
+                type="text" 
+                placeholder='포켓몬 검색' 
+                value={keyWord}
+                onChange={(e) => setKeyWord(e.target.value)}
+                />
+              <input type="submit" value="검색" onClick={handleClick}/>
             </div>
 
             <div className="pokemonGridContainer">
