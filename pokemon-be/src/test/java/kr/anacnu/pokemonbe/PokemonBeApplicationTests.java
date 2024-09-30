@@ -18,8 +18,8 @@ class PokemonBeApplicationTests {
 	@Autowired
 	PokemonTypeService pokemonTypeService;
 
-	private final String pathPokemonData = "../pokemon_data.csv";
-	private final String pathPokemonTypeData = "../pokemon_type_data.csv";
+	private final String pathPokemonData = "../../pokemon_data.csv";
+	private final String pathPokemonTypeData = "../../pokemon_type_data.csv";
 
 	@Test
 	void addTypes() {

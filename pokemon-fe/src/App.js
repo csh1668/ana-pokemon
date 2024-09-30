@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react'
 import Papa from 'papaparse'  // CSV Parse를 위한 패키지
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom'
 import PokemonDetail from './PokemonDetail.js'
+import axios from 'axios'
 
 function App() {
   const [pokemonList, setPokemonList] = useState([])  // public/pokemon_data.csv 에서 불러온 정보 저장용 (임시)
@@ -29,6 +30,20 @@ function App() {
     })
     .catch((error)=>{
       console.error('Error fetching CSV file: ', error)
+    })
+  }, [])
+
+  // Backend API ('/list') 를 통한 초기 데이터 획득
+  useEffect(()=>{
+    axios({
+      url: '/proxy/list'
+    })
+    .then((res)=>res.data.content)
+    .then((res)=>{
+      console.log(res)
+    })
+    .catch((err)=>{
+      console.log('API 통신 실패 : ', err)
     })
   }, [])
 
