@@ -53,9 +53,7 @@ function App() {
 
   // 스크롤이 페이지 끝에 도달하면 추가 데이터를 로드
   const loadMorePokemons = useCallback(()=>{
-    const nextPage = page + 1
-    console.log(`page : ${page} nextPage : ${nextPage}`)
-    setPage(nextPage)
+    setPage((page)=>page+1)
   }, [page])
 
   // IntersectionObserver를 이용한 무한 스크롤 구현
@@ -112,7 +110,7 @@ function App() {
   }
 
   const clickSearch = ()=>{
-    if(option == 'name' || option == 'key') {setOrder('asc')}
+    if(option == 'name' || option == 'type') {setOrder('asc')}
     else {setKeyWord('')}
     setIsSearch(!isSearch)
     setPage(0)
@@ -172,10 +170,10 @@ function App() {
               <select value={option} onChange={(e) => setOption(e.target.value)}>
                 <option>name</option>
                 <option>type</option>
-                <option>키</option>
-                <option>무게</option>
+                <option>height</option>
+                <option>weight</option>
               </select>
-              {(!(option === '키' || option === '무게') && (
+              {(!(option === 'height' || option === 'weight') && (
                 <input 
                   type="text" 
                   placeholder='포켓몬 검색' 
@@ -201,7 +199,7 @@ function App() {
                   if (index === visiblePokemons.length - 1) {
                     return (
                       <Link to={`/pokemon/${pokemonId}`} key={pokemonInfo.pokedexNum}>
-                        <div ref={lastPokemonElementRef} className="pokemonCard" key={pokemonInfo.pokedexNum}>
+                        <div ref={lastPokemonElementRef} className="pokemonCard">
                           <img src={pokemonInfo.gifUrl || pokemonInfo.imageUrl} width="100" height="100" alt={pokemonInfo.name}/>
                           <p className="pokemonId">No.{'0'.repeat(4 - String(pokemonInfo.pokedexNum).length) + pokemonInfo.pokedexNum}</p>
                           <p className="pokemonName">{pokemonInfo.name}</p>
@@ -211,7 +209,7 @@ function App() {
                   } else {
                     return (
                       <Link to={`/pokemon/${pokemonId}`} key={pokemonInfo.pokedexNum}>
-                        <div className="pokemonCard" key={pokemonInfo.pokedexNum}>
+                        <div className="pokemonCard">
                           <img src={pokemonInfo.gifUrl || pokemonInfo.imageUrl} width="100" height="100" alt={pokemonInfo.name}/>
                           <p className="pokemonId">No.{'0'.repeat(4 - String(pokemonInfo.pokedexNum).length) + pokemonInfo.pokedexNum}</p>
                           <p className="pokemonName">{pokemonInfo.name}</p>

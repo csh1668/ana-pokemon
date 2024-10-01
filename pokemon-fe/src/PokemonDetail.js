@@ -7,7 +7,11 @@ function PokemonDetail({pokeList}) {
   const [pokemon, setPokemon] = useState([])  // 포켓몬 리스트에서 해당 ID 찾기
   const { id } = useParams()  // URL의 id 파라미터 가져오기
   useEffect(()=>{
-    setPokemon(pokeList[id-1])
+    pokeList.map((item) => {
+      if(id === String(item.pokedexNum)) {
+        setPokemon(item)
+      }
+    })
   }, [])
 
   if (!pokemon) {
