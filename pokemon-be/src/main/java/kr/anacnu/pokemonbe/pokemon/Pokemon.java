@@ -66,8 +66,11 @@ public class Pokemon extends BaseTimeEntity {
     @Column(length = 500, nullable = true)
     private String gifUrl;
 
+    @Column(nullable = false)
+    private Long vote;
+
     @Builder
-    public Pokemon(String name, Long pokedexNum, List<PokemonType> types, Float height, Float weight, String imageUrl, String gifUrl) {
+    public Pokemon(String name, Long pokedexNum, List<PokemonType> types, Float height, Float weight, String imageUrl, String gifUrl, Long vote) {
         this.name = name;
         this.pokedexNum = pokedexNum;
         this.types = types.stream().map(type -> PokemonTypeRelation.of(this, type)).toList();
@@ -75,6 +78,7 @@ public class Pokemon extends BaseTimeEntity {
         this.weight = weight;
         this.imageUrl = imageUrl;
         this.gifUrl = gifUrl;
+        this.vote = vote;
     }
 
     @Override
@@ -87,6 +91,7 @@ public class Pokemon extends BaseTimeEntity {
                 + ", weight=" + this.getWeight()
                 + ", imageUrl=" + this.getImageUrl()
                 + ", gifUrl=" + this.getGifUrl()
+                + ", vote=" + this.getVote()
                 + ")";
     }
 }

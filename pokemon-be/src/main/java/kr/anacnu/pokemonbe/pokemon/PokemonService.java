@@ -36,6 +36,7 @@ public class PokemonService {
                     .imageUrl(dto.getImageUrl())
                     .gifUrl(dto.getGifUrl())
                     .types(types)
+                    .vote(0L)
                     .build();
             return pokemonRepository.save(newPokemon);
         }
@@ -57,16 +58,30 @@ public class PokemonService {
     }
 
     public PagedModel<PokemonDto> getPokemons(int page, String kw, PokemonSearchType searchType, boolean isAsc) {
-        List<Sort.Order> sorts = List.of(isAsc ? Sort.Order.asc("pokedexNum") : Sort.Order.desc("pokedexNum"));
+        List<Sort.Order> sorts = switch (searchType) {
+            case HEIGHT -> List.of(isAsc ? Sort.Order.asc("height") : Sort.Order.desc("height"));
+            case WEIGHT -> List.of(isAsc ? Sort.Order.asc("weight") : Sort.Order.desc("weight"));
+            case VOTE -> List.of(isAsc ? Sort.Order.asc("vote") : Sort.Order.desc("vote"));
+            default -> List.of(isAsc ? Sort.Order.asc("pokedexNum") : Sort.Order.desc("pokedexNum"));
+        };
         var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by(sorts));
-        var spec = switch (searchType) {
+        Specification<Pokemon> spec = switch (searchType) {
             case NAME -> nameLike(kw);
             case TYPE -> hasType(kw);
-            default -> null;
+            default -> Specification.where(null);
         };
         var ret = pokemonRepository.findAll(spec, pageable).map(PokemonDto::new);
 
         return new PagedModel<>(ret);
+    }
+
+    public PokemonDto getPokemonByName(String name) {
+        var pokemon = findPokemonByName(name);
+        if (pokemon == null) {
+            return null;
+        } else {
+            return new PokemonDto(pokemon);
+        }
     }
 
     private Specification<Pokemon> nameLike(String kw) {
@@ -103,13 +118,14 @@ public class PokemonService {
         };
     }
 
-    public PokemonDto getPokemonByName(String name) {
+    public Long votePokemon(String name) {
         var pokemon = findPokemonByName(name);
         if (pokemon == null) {
-            return null;
-        } else {
-            return new PokemonDto(pokemon);
+            throw new IllegalArgumentException("포켓몬을 찾을 수 없습니다.");
         }
+        pokemon.setVote(pokemon.getVote() + 1);
+        pokemonRepository.save(pokemon);
+        return pokemon.getVote();
     }
 
     private Pokemon findPokemonByName(String name) {

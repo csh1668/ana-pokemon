@@ -31,4 +31,13 @@ public class PokemonController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/vote/{name}")
+    public ResponseEntity<?> votePokemon(@PathVariable("name") String name) {
+        try {
+            return ResponseEntity.ok(pokemonService.votePokemon(name));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

@@ -18,6 +18,7 @@ public class PokemonDto {
     private Float weight;
     private String imageUrl;
     private String gifUrl;
+    private Long vote;
 
     public PokemonDto(Pokemon pokemon) {
         this.pokedexNum = pokemon.getPokedexNum();
@@ -26,13 +27,14 @@ public class PokemonDto {
         this.weight = pokemon.getWeight();
         this.imageUrl = pokemon.getImageUrl();
         this.gifUrl = pokemon.getGifUrl();
+        this.vote = pokemon.getVote();
         this.types = pokemon.getTypes().stream()
                 .map(PokemonTypeRelation::getType)
                 .map(PokemonType::getName).toList();
     }
 
     @Builder
-    public PokemonDto(Long pokedexNum, String name, List<String> types, Float height, Float weight, String imageUrl, String gifUrl) {
+    public PokemonDto(Long pokedexNum, String name, List<String> types, Float height, Float weight, String imageUrl, String gifUrl, Long vote) {
         this.pokedexNum = pokedexNum;
         this.name = name;
         this.types = types;
@@ -40,6 +42,7 @@ public class PokemonDto {
         this.weight = weight;
         this.imageUrl = imageUrl;
         this.gifUrl = gifUrl;
+        this.vote = vote;
     }
 
     @Override
@@ -51,6 +54,7 @@ public class PokemonDto {
                 + ", weight=" + this.getWeight()
                 + ", imageUrl=" + this.getImageUrl()
                 + ", gifUrl=" + this.getGifUrl()
+                + ", vote=" + this.getVote()
                 + ")";
     }
 }
