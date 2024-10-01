@@ -112,9 +112,10 @@ function App() {
   }
 
   const clickSearch = ()=>{
+    if(option == 'name' || option == 'key') {setOrder('asc')}
+    else {setKeyWord('')}
     setIsSearch(!isSearch)
     setPage(0)
-    if(option == 'name' || option == 'name') {setOrder('asc')}
   }
 
   // 검색 처리
