@@ -16,7 +16,7 @@ function App() {
   const [option, setOption] = useState('name')  // 검색 옵션
   const [keyWord, setKeyWord] = useState('')  //  검색 키워드
   const [isSearch, setIsSearch] = useState(true)  // 검색
-  const [order, setOrder] = useState('asc')
+  const [order, setOrder] = useState('asc') // 정렬 기준
 
   // Backend API ('/list') 를 통한 초기 데이터 획득 및 검색 시 데이터 획득
   useEffect(()=>{
@@ -172,8 +172,9 @@ function App() {
                 <option>type</option>
                 <option>height</option>
                 <option>weight</option>
+                <option>vote</option>
               </select>
-              {(!(option === 'height' || option === 'weight') && (
+              {(!(option === 'height' || option === 'weight' || option === 'vote') && (
                 <input 
                   type="text" 
                   placeholder='포켓몬 검색' 
