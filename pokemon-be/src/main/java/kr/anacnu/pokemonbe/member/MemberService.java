@@ -18,6 +18,7 @@ public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
 
     /**
@@ -36,7 +37,7 @@ public class MemberService {
     public void signUp (String studentId, String password) {
         Member member = new Member();
         member.setStudentId(studentId);
-        member.setPassword(password);
+        member.setPassword(passwordEncoder.encode(password));
         memberRepository.save(member);
     }
 }

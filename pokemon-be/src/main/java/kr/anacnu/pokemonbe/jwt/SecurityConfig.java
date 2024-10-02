@@ -39,8 +39,8 @@ public class SecurityConfig {
                         .requestMatchers("/**").permitAll()  // /sign-in은 인증 없이 접근 가능
 //                        .anyRequest().authenticated()
                 )  // 그 외의 모든 요청은 인증 필요
-//                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-//                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

@@ -35,7 +35,7 @@ public class Member implements UserDetails {
     /**
      * "교육 참가 학생의 학번"이 로그인 password가 됩니다.
      */
-    @Column(length = 50, nullable = false)
+    @Column(length = 200, nullable = false)
     private String password;
 
     @Override
