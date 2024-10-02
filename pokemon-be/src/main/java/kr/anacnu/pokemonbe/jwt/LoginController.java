@@ -38,13 +38,14 @@ public class LoginController {
     public ResponseEntity<?> signUp(@RequestBody LoginDto loginDto,
                                     @PathVariable("magic") String magic) {
         try {
+            System.out.println("asd");
             if (!MAGIC.equals(magic)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
             memberService.signUp(loginDto.getStudentId(), loginDto.getPassword());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

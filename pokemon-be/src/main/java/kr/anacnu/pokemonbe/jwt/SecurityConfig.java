@@ -36,11 +36,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/*").permitAll()  // /sign-in은 인증 없이 접근 가능
+                        .requestMatchers("/**").permitAll()  // /sign-in은 인증 없이 접근 가능
 //                        .anyRequest().authenticated()
                 )  // 그 외의 모든 요청은 인증 필요
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                        UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+//                        UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
