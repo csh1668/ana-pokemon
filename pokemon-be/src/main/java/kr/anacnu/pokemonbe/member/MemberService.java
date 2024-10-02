@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ public class MemberService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final MemberRepository memberRepository;
 
 
     /**
@@ -31,5 +33,11 @@ public class MemberService {
         return jwtTokenProvider.generateToken(authentication);
     }
 
+    public void signUp (String studentId, String password) {
+        Member member = new Member();
+        member.setStudentId(studentId);
+        member.setPassword(password);
+        memberRepository.save(member);
+    }
 }
 

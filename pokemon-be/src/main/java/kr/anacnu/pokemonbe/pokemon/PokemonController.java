@@ -1,6 +1,7 @@
 package kr.anacnu.pokemonbe.pokemon;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +11,7 @@ public class PokemonController {
     private final PokemonService pokemonService;
 
     @GetMapping("/list")
+    @Cacheable(value = "pokemons", key = "#page + #kw + #kind + #order")
     public ResponseEntity<?> listPokemons(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "") String kw,
                                           @RequestParam(defaultValue = "name") String kind,

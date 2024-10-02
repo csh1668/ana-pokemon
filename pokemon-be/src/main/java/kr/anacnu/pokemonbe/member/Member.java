@@ -28,14 +28,14 @@ public class Member implements UserDetails {
     /**
      * "ana + 교육 참가 학생의 학번"으로 로그인 ID가 구성됩니다.
      */
-    @Column(length = 9, nullable = false)
+    @Column(length = 50, nullable = false)
     private String studentId;
 
 
     /**
      * "교육 참가 학생의 학번"이 로그인 password가 됩니다.
      */
-    @Column(length = 9, nullable = false)
+    @Column(length = 50, nullable = false)
     private String password;
 
     @Override

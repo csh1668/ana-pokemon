@@ -6,15 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 public class LoginController {
 
     private final MemberService memberService;
+    private final String MAGIC = "jong-gang";
 
     /**
      * 로그인을 시도합니다.
@@ -32,6 +31,20 @@ public class LoginController {
         } catch (BadCredentialsException e) {
             JwtToken emptyToken = new JwtToken("Bearer","" );
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(emptyToken);
+        }
+    }
+
+    @PostMapping("/sign-up/{magic}")
+    public ResponseEntity<?> signUp(@RequestBody LoginDto loginDto,
+                                    @PathVariable("magic") String magic) {
+        try {
+            if (!MAGIC.equals(magic)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            memberService.signUp(loginDto.getStudentId(), loginDto.getPassword());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 }
