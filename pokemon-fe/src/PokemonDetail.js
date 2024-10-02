@@ -10,13 +10,13 @@ function PokemonDetail({pokeList}) {
   const [typeArr, setTypeArr] = useState([])  // 포켓몬의 type 변수
   const { id } = useParams()  // URL의 id 파라미터 가져오기
   useEffect(()=>{
-    pokeList.map((item) => {
-      if(id === String(item.pokedexNum)) {
-        setPokemon(item)
-        setVote(item.vote)
-        setTypeArr(item.types)
-        console.log(item)
-      }
+    axios({
+      url: `/proxy/get/${id}`
+    })
+    .then((res)=>res.data)
+    .then((res)=>{
+      setPokemon(res)
+      setVote(res.vote)
     })
   }, [])
 
