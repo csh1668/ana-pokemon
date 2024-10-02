@@ -23,10 +23,20 @@ public class PokemonController {
         }
     }
 
+    /**
+     * 포켓몬 이름 또는 도감 번호로 포켓몬을 검색합니다.
+     * @param name 숫자로만 구성된다면 도감 번호로, 그렇지 않다면 포켓몬 이름으로 간주합니다.
+     * @return
+     */
     @GetMapping("/get/{name}")
     public ResponseEntity<?> getPokemon(@PathVariable("name") String name) {
         try {
-            return ResponseEntity.ok(pokemonService.getPokemonByName(name));
+            boolean isNumber = name.chars().allMatch(Character::isDigit);
+            if (isNumber) {
+                return ResponseEntity.ok(pokemonService.getPokemonByPokedexNum(Long.parseLong(name)));
+            } else {
+                return ResponseEntity.ok(pokemonService.getPokemonByName(name));
+            }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

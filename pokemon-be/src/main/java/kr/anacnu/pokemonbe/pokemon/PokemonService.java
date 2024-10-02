@@ -78,7 +78,16 @@ public class PokemonService {
     public PokemonDto getPokemonByName(String name) {
         var pokemon = findPokemonByName(name);
         if (pokemon == null) {
-            return null;
+            throw new IllegalArgumentException("포켓몬을 찾을 수 없습니다.");
+        } else {
+            return new PokemonDto(pokemon);
+        }
+    }
+
+    public PokemonDto getPokemonByPokedexNum(long l) {
+        var pokemon = pokemonRepository.findByPokedexNum(l).orElse(null);
+        if (pokemon == null) {
+            throw new IllegalArgumentException("포켓몬을 찾을 수 없습니다.");
         } else {
             return new PokemonDto(pokemon);
         }
@@ -131,4 +140,5 @@ public class PokemonService {
     private Pokemon findPokemonByName(String name) {
         return pokemonRepository.findByName(name).orElse(null);
     }
+
 }
