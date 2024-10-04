@@ -9,6 +9,7 @@ function PokemonDetail({pokeList}) {
   const [vote, setVote] = useState(0) // 포켓몬의 vote 변수
   const [typeArr, setTypeArr] = useState([])  // 포켓몬의 type 변수
   const { id } = useParams()  // URL의 id 파라미터 가져오기
+  const token = localStorage.getItem("accessToken") // JWT Token
   useEffect(()=>{
     axios({
       url: `/proxy/get/${id}`
@@ -17,6 +18,7 @@ function PokemonDetail({pokeList}) {
     .then((res)=>{
       setPokemon(res)
       setVote(res.vote)
+      setTypeArr(res.types)
     })
   }, [])
 
@@ -25,7 +27,11 @@ function PokemonDetail({pokeList}) {
   }
 
   const handleVote = ()=>{
+    console.log(`token : ${token}`)
     axios({
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
       url: `/proxy/vote/${pokemon.name}`,
       method: "POST"
     })

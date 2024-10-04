@@ -14,6 +14,9 @@ function App() {
   const [userId, setUserId] = useState('')    //  입력받은 아이디
   const [password, setPassword] = useState('')  // 입력받은 비밀번호
 
+  const [isLogin, setIsLogin] = useState(false)  // 로그인 여부
+  const [memberId, setMemberId] = useState('')  // 현재 로그인 된 아이디
+
   const [option, setOption] = useState('name')  // 검색 옵션
   const [keyWord, setKeyWord] = useState('')  //  검색 키워드
   const [isSearch, setIsSearch] = useState(true)  // 검색
@@ -137,14 +140,18 @@ function App() {
     })
     .then((res)=>res.data)
     .then((res)=>{
-      console.log(`token : ${res.token}`)
-      console.log(`meesage : ${res.message}`)
+      console.log(res)
+      console.log(`token : ${res.accessToken}`)
 
-      if (res.token) {
-        alert('로그인 성공')
-      } else {
-        alert('로그인 실패')
-      }
+      localStorage.setItem('accessToken', res.accessToken)
+      setMemberId(userId)
+      setIsLogin(true)
+
+      alert('로그인 성공')
+    })
+    .catch((err)=>{
+      localStorage.setItem('accessToken', '')
+      alert('로그인 실패')
     })
 
     console.log(`Id : ${userId}, Pw : ${password}`)
@@ -163,6 +170,90 @@ function App() {
     clickSearch()
   }
 
+  const handleSignOut = () => {
+    setIsLogin(false)
+    setMemberId(false)
+    localStorage.setItem('accessToken', '')
+    togglePopup()
+  }
+
+  // 로그인 및 회원정보 창 
+  const handleMemberInfo = () => {
+    if (isLogin) {
+      return memberInfo()
+    } else {
+      return signInOrUp()
+    }
+  }
+
+  // 로그인 및 회원가입 창 구현
+  const signInOrUp = () => {
+    return (
+      <div className="popup" onClick={closePopup}>
+        <div className="popup-inner" onClick={(e)=> e.stopPropagation()}>
+          <h2>{(isSignUp && "회원가입") || "로그인"}</h2>
+          <form onSubmit={handleSign}>
+            <label>
+              아이디 : 
+              <input
+                type="text"
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
+                required
+              />
+            </label>
+            <br />
+            <label>
+              비밀번호 : 
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </label>
+            <br />
+            <div>
+              
+            </div>
+            {(isSignUp && (
+              <div className='register'>
+                <button type="button" onClick={setSignMode}>
+                로그인
+                </button>
+                <button type="submit">회원가입 하기</button>
+              </div>
+            )) || (
+              <div className='login'>
+                <button type="button" onClick={setSignMode}>
+                  회원가입
+                </button>
+                <button type="submit">로그인 하기</button>
+              </div>
+            )}
+          </form>
+        </div>
+      </div>
+    )
+  }
+
+  // 회원 정보 구현
+  const memberInfo = () => {
+    return (
+      <div className="popup" onClick={closePopup}>
+        <div className="popup-inner" onClick={(e)=> e.stopPropagation()}>
+          <form onSubmit={handleSignOut}>
+            <h2>회원 정보</h2>
+            <label>아이디 : {memberId}</label>
+            <br></br>
+            <br></br>
+            <button type='submit'>로그아웃</button>
+          </form>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <Router>
       <Routes>
@@ -171,53 +262,7 @@ function App() {
           <div className="appContainer">
             {/* <button type="button" className="Button" onClick={loginPrompt}> */}
             <button type='button' className='Button' onClick={togglePopup}>
-              {(isOpen && (
-                <div className="popup" onClick={closePopup}>
-                  <div className="popup-inner" onClick={(e)=> e.stopPropagation()}>
-                    <h2>{(isSignUp && "회원가입") || "로그인"}</h2>
-                    <form onSubmit={handleSign}>
-                      <label>
-                        아이디 : 
-                        <input
-                          type="text"
-                          value={userId}
-                          onChange={(e) => setUserId(e.target.value)}
-                          required
-                        />
-                      </label>
-                      <br />
-                      <label>
-                        비밀번호 : 
-                        <input
-                          type="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                        />
-                      </label>
-                      <br />
-                      <div>
-                        
-                      </div>
-                      {(isSignUp && (
-                        <div className='register'>
-                          <button type="button" onClick={setSignMode}>
-                          로그인
-                          </button>
-                          <button type="submit">회원가입 하기</button>
-                        </div>
-                      )) || (
-                        <div className='login'>
-                          <button type="button" onClick={setSignMode}>
-                            회원가입
-                          </button>
-                          <button type="submit">로그인 하기</button>
-                        </div>
-                      )}
-                    </form>
-                  </div>
-                </div>
-              )) || (
+              {(isOpen && handleMemberInfo()) || (
                 <img src="https://cdn-icons-png.flaticon.com/512/159/159833.png" width="50" height="50"/>
               )}
             </button>
