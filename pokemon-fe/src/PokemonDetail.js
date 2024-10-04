@@ -41,7 +41,7 @@ function PokemonDetail({pokeList}) {
       alert('투표를 완료했습니다.')
     })
     .catch((err)=>{
-      alert('투표에 실패했습니다. ', err)
+      alert('투표에 실패했습니다. \n투표 기능은 로그인이 필요합니다. ', err)
     })
   }
 

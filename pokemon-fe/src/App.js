@@ -17,11 +17,30 @@ function App() {
 
   const [isLogin, setIsLogin] = useState(false)  // 로그인 여부
   const [memberId, setMemberId] = useState('')  // 현재 로그인 된 아이디
+  const token = localStorage.getItem("accessToken") // JWT Token
 
   const [option, setOption] = useState('name')  // 검색 옵션
   const [keyWord, setKeyWord] = useState('')  //  검색 키워드
   const [isSearch, setIsSearch] = useState(true)  // 검색
   const [order, setOrder] = useState('asc') // 정렬 기준
+
+  // 페이지 로드 할 때마다 JWT Token으로 로그인 여부 확인 
+  useEffect(()=>{
+    axios({
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      url: '/proxy/me'
+    })
+    .then((res)=>res.data)
+    .then((res)=>{
+      setIsLogin(true)
+      setMemberId(res)
+    })
+    .catch((err)=>{
+      
+    })
+  })
 
   // Backend API ('/list') 를 통한 초기 데이터 획득 및 검색 시 데이터 획득
   useEffect(()=>{
