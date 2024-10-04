@@ -38,9 +38,9 @@ function App() {
       setMemberId(res)
     })
     .catch((err)=>{
-      
+
     })
-  })
+  }, [])
 
   // Backend API ('/list') 를 통한 초기 데이터 획득 및 검색 시 데이터 획득
   useEffect(()=>{
