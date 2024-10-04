@@ -23,6 +23,7 @@ public class MemberService {
 
     /**
      * 로그인을 처리하고 JWT Token을 반환합니다.
+     *
      * @param studentId
      * @param password
      * @return
@@ -34,11 +35,14 @@ public class MemberService {
         return jwtTokenProvider.generateToken(authentication);
     }
 
-    public void signUp (String studentId, String password) {
+    public String signUp(String studentId, String password) {
+        if (memberRepository.findByStudentId(studentId).isPresent())
+            throw new RuntimeException("이미 존재하는 학번입니다.");
+
         Member member = new Member();
         member.setStudentId(studentId);
         member.setPassword(passwordEncoder.encode(password));
         memberRepository.save(member);
+        return studentId;
     }
 }
-

@@ -2,6 +2,7 @@ package kr.anacnu.pokemonbe.jwt;
 
 
 import kr.anacnu.pokemonbe.member.MemberService;
+import kr.anacnu.pokemonbe.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
 
     private final MemberService memberService;
-    private final String MAGIC = "jong-gang";
+    private final CustomUserDetailsService customUserDetailsService;
 
     /**
      * 로그인을 시도합니다.
@@ -34,16 +35,19 @@ public class LoginController {
         }
     }
 
-    @PostMapping("/sign-up/{magic}")
-    public ResponseEntity<?> signUp(@RequestBody LoginDto loginDto,
-                                    @PathVariable("magic") String magic) {
+    @PostMapping("/sign-up")
+    public ResponseEntity<?> signUp(@RequestBody LoginDto loginDto) {
         try {
-            System.out.println("asd");
-            if (!MAGIC.equals(magic)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-            memberService.signUp(loginDto.getStudentId(), loginDto.getPassword());
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(memberService.signUp(loginDto.getStudentId(), loginDto.getPassword()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getMyInfo() {
+        try {
+            return ResponseEntity.ok(SecurityUtil.getCurrentStudentId());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

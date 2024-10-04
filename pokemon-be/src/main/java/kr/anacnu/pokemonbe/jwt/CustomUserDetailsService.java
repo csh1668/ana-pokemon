@@ -2,6 +2,7 @@ package kr.anacnu.pokemonbe.jwt;
 
 import kr.anacnu.pokemonbe.member.Member;
 import kr.anacnu.pokemonbe.member.MemberRepository;
+import kr.anacnu.pokemonbe.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

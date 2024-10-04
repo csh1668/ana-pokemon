@@ -1,6 +1,5 @@
 package kr.anacnu.pokemonbe.pokemon;
 
-import jakarta.persistence.criteria.Predicate;
 import kr.anacnu.pokemonbe.pokemon_type.PokemonType;
 import kr.anacnu.pokemonbe.pokemon_type.PokemonTypeRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -57,6 +57,7 @@ public class PokemonService {
         }
     }
 
+    @Transactional(readOnly = true)
     public PagedModel<PokemonDto> getPokemons(int page, String kw, PokemonSearchType searchType, boolean isAsc) {
         List<Sort.Order> sorts = switch (searchType) {
             case HEIGHT -> List.of(isAsc ? Sort.Order.asc("height") : Sort.Order.desc("height"));
@@ -127,8 +128,9 @@ public class PokemonService {
         };
     }
 
-    public Long votePokemon(String name) {
-        var pokemon = findPokemonByName(name);
+
+    @Transactional
+    public Long votePokemon(Pokemon pokemon) {
         if (pokemon == null) {
             throw new IllegalArgumentException("포켓몬을 찾을 수 없습니다.");
         }
@@ -137,8 +139,49 @@ public class PokemonService {
         return pokemon.getVote();
     }
 
+    @Transactional
+    public Long votePokemonByPokedexNum(long l) {
+        var pokemon = pokemonRepository.findByPokedexNum(l).orElse(null);
+        return votePokemon(pokemon);
+    }
+
+    @Transactional
+    public Long votePokemonByName(String name) {
+        var pokemon = findPokemonByName(name);
+        return votePokemon(pokemon);
+    }
+
+    @Transactional
+    public Long resetVotePokemon(Pokemon pokemon) {
+        if (pokemon == null) {
+            throw new IllegalArgumentException("포켓몬을 찾을 수 없습니다.");
+        }
+        pokemon.setVote(0L);
+        pokemonRepository.save(pokemon);
+        return pokemon.getVote();
+    }
+
+    @Transactional
+    public Long resetVotePokemonByPokedexNum(long l) {
+        var pokemon = pokemonRepository.findByPokedexNum(l).orElse(null);
+        return resetVotePokemon(pokemon);
+    }
+
+    @Transactional
+    public Long resetVotePokemonByName(String name) {
+        var pokemon = findPokemonByName(name);
+        return resetVotePokemon(pokemon);
+    }
+
     private Pokemon findPokemonByName(String name) {
         return pokemonRepository.findByName(name).orElse(null);
     }
 
+    @Transactional
+    public boolean resetVoteAll() {
+        var pokemons = pokemonRepository.findAll();
+        pokemons.forEach(p -> p.setVote(0L));
+        pokemonRepository.saveAll(pokemons);
+        return true;
+    }
 }
