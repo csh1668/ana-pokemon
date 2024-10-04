@@ -1,6 +1,7 @@
 body {
   margin: 0;
   padding: 0;
+  font-family: 'Arial', sans-serif;
   /* overflow: hidden; */
 }
 
@@ -29,16 +30,56 @@ body {
 .searchBar {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8);  /* 배경색 약간 투명하게 */
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);  /* 약간의 그림자 추가 */
 }
 
-.searchBar select, .searchBar input[type="text"] {
+.searchSelect, .searchInput, .orderSelect, .searchButton {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 8px;
   margin-right: 10px;
-  padding: 5px;
+  font-size: 16px;
 }
 
-.searchBar input[type="submit"] {
-  padding: 5px 10px;
+.searchSelect, .orderSelect {
+  background-color: #f7f7f7;
+  color: #333;
+}
+
+.searchInput {
+  width: 200px;
+}
+
+.searchButton {
+  background-color: #4caf50; /* 녹색 계열의 버튼 */
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.searchButton:hover {
+  background-color: #45a049;
+}
+
+@media (max-width: 768px) {
+  .searchBar {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .searchSelect, .searchInput, .orderSelect, .searchButton {
+    margin: 5px 0;
+    width: 100%;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
 }
 
 .pokemonGridContainer {
@@ -118,8 +159,66 @@ body {
 
 .popup-inner {
   background-color: white;
-  padding: 20px;
+  padding: 40px;
   border-radius: 10px;
-  width: 300px;
+  width: 350px;
   text-align: center;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.inputField {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.button-primary {
+  background-color: #7b68ee; /* 퍼플 버튼 */
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.button-secondary {
+  background-color: #fff;
+  color: #333;
+  border: 2px solid #7b68ee;
+  padding: 10px;
+  width: 100%;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.memberInfoLabel {
+  font-size: 18px;
+  font-weight: bold;
+  color: #555;
+  display: block;
+  margin: 20px 0;
+  text-align: center; /* 가운데 정렬 */
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  .popup-inner {
+    width: 90%;
+  }
 }
