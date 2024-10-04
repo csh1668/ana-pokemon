@@ -10,6 +10,7 @@ function App() {
   const observerRef = useRef()  // IntersectionObserver ref
 
   const [isOpen, setIsOpen] = useState(false) //  팝업창 유무
+  const [isSignUp, setIsSignUp] = useState(false)  // 회원가입or로그인 구별
   const [userId, setUserId] = useState('')    //  입력받은 아이디
   const [password, setPassword] = useState('')  // 입력받은 비밀번호
 
@@ -61,7 +62,7 @@ function App() {
     if (observerRef.current)  observerRef.current.disconnect()
     
     observerRef.current = new IntersectionObserver((entries)=>{
-      if (entries[0].isIntersecting && page < 21) {
+      if (entries[0].isIntersecting && page < 22) {
         loadMorePokemons()  // 마지막 요소가 보이면 추가적으로 로드
       }
     })
@@ -69,7 +70,12 @@ function App() {
     if (node) observerRef.current.observe(node)
   }, [loadMorePokemons, visiblePokemons.length])
 
-  // 팝업 열기/닫기
+  // 회원가입/로그인으로 창 전환
+  const setSignMode = () => {
+    setIsSignUp(!isSignUp)
+  }
+
+  // 팝업
   const togglePopup = () => {
     setIsOpen(!isOpen)
   }
@@ -82,7 +88,43 @@ function App() {
   }
 
   // 입력 처리
-  const handleLogin = (e) => {
+  const handleSign = (e) => {
+    if (isSignUp) {
+      handleSignup(e)
+    } else {
+      handleSignin(e)
+    }
+
+    setUserId('')
+    setPassword('')
+    setIsSignUp(false)
+  }
+
+  // 회원가입 처리
+  const handleSignup = (e) => {
+    e.preventDefault()
+    console.log(`id : ${userId}, pw : ${password}`)
+    // 회원가입 로직
+    axios({
+      method: "POST",
+      url: `/proxy/sign-up`,
+      data: {
+        studentId: userId,
+        password: password
+      }
+    })
+    .then(()=>{
+      alert('회원가입 성공')
+    })
+    .catch((err)=>{
+      alert('회원가입 실패')
+    })
+
+    setIsOpen(false)
+  }
+
+  // 로그인 처리
+  const handleSignin = (e) => {
     e.preventDefault()
     // 로그인 로직 작성
     axios({
@@ -110,7 +152,7 @@ function App() {
   }
 
   const clickSearch = ()=>{
-    if(option == 'name' || option == 'type') {setOrder('asc')}
+    if(option === 'name' || option === 'type') {setOrder('asc')}
     else {setKeyWord('')}
     setIsSearch(!isSearch)
     setPage(0)
@@ -132,8 +174,8 @@ function App() {
               {(isOpen && (
                 <div className="popup" onClick={closePopup}>
                   <div className="popup-inner" onClick={(e)=> e.stopPropagation()}>
-                    <h2>Login</h2>
-                    <form onSubmit={handleLogin}>
+                    <h2>{(isSignUp && "회원가입") || "로그인"}</h2>
+                    <form onSubmit={handleSign}>
                       <label>
                         아이디 : 
                         <input
@@ -154,10 +196,24 @@ function App() {
                         />
                       </label>
                       <br />
-                      <button type="submit">로그인 하기</button>
-                      <button type="button" onClick={togglePopup}>
-                        뒤로 가기
-                      </button>
+                      <div>
+                        
+                      </div>
+                      {(isSignUp && (
+                        <div className='register'>
+                          <button type="button" onClick={setSignMode}>
+                          로그인
+                          </button>
+                          <button type="submit">회원가입 하기</button>
+                        </div>
+                      )) || (
+                        <div className='login'>
+                          <button type="button" onClick={setSignMode}>
+                            회원가입
+                          </button>
+                          <button type="submit">로그인 하기</button>
+                        </div>
+                      )}
                     </form>
                   </div>
                 </div>
@@ -184,7 +240,7 @@ function App() {
               )) || (
                 <select 
                   value={order === 'asc' ? '오름차순' : '내림차순'} 
-                  onChange={(e) => {setOrder(e.target.value == '오름차순' ? 'asc' : 'desc')}}>
+                  onChange={(e) => {setOrder(e.target.value === '오름차순' ? 'asc' : 'desc')}}>
                     <option value="오름차순">오름차순</option>
                     <option value="내림차순">내림차순</option>
                 </select>
