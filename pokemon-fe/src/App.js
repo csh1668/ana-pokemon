@@ -24,6 +24,9 @@ function App() {
   const [isSearch, setIsSearch] = useState(true)  // 검색
   const [order, setOrder] = useState('asc') // 정렬 기준
 
+  const [isMaxPage, setIsMaxPage] = useState(false) // 마지막 페이지 확인
+  const [loading, setLoading] = useState(false) // 로딩 상태 관리
+
   // 페이지 로드 할 때마다 JWT Token으로 로그인 여부 확인 
   useEffect(()=>{
     axios({
@@ -43,21 +46,26 @@ function App() {
 
   // Backend API ('/list') 를 통한 초기 데이터 획득 및 검색 시 데이터 획득
   useEffect(()=>{
+    setVisiblePokemons([])
     axios({
-      url: `https://pokedex.anacnu.kr/list?page=${page}&kw=${keyWord}&kind=${option}&order=${order}`
+      url: `https://pokedex.anacnu.kr/list?page=0&kw=${keyWord}&kind=${option}&order=${order}`
     })
+    .then((res)=>res.data.content)
     .then((res)=>{
-      res = res.data.content
       console.log(`page : ${page} kw : ${keyWord} kind : ${option}`)
       setVisiblePokemons(res)
+      setPage(0)
+      setIsMaxPage(false)
     })
     .catch((err)=>{
       console.log('API 통신 실패 : ', err)
     })
+
   }, [isSearch])
 
    // page가 넘어갈 때 마다 데이터를 로드하도록 함.
    useEffect(()=>{
+    console.log(`Page. ${page} 에서 로드 시도중`)
     axios({
       url: `https://pokedex.anacnu.kr/list?page=${page}&kw=${keyWord}&kind=${option}&order=${order}`
     })
@@ -68,23 +76,35 @@ function App() {
       } else {
         setVisiblePokemons((previous)=>[...previous, ...res])
       }
+      if (visiblePokemons.length % 50 != 0) setIsMaxPage(true)
     })
     .catch((err)=>{
       console.log('API 통신 실패 : ', err)
+    })
+    .finally(()=>{
+      setLoading(false)
+      console.log(`Loading 종료, 현재 페이지 : ${page}`)
     })
   }, [page])
 
   // 스크롤이 페이지 끝에 도달하면 추가 데이터를 로드
   const loadMorePokemons = useCallback(()=>{
+    console.log(`현재 위치 : ${page}, 로딩중? : ${loading}`)
+    if (loading) {
+      console.log(`Loading 중... 현재 페이지 : ${page}`)
+      return
+    }
+    console.log(`Page. ${page} 에서 시도 할걸?`)
+    setLoading(true)
     setPage((page)=>page+1)
-  }, [page])
+  }, [page, loading])
 
   // IntersectionObserver를 이용한 무한 스크롤 구현
   const lastPokemonElementRef = useCallback((node)=>{
     if (observerRef.current)  observerRef.current.disconnect()
     
     observerRef.current = new IntersectionObserver((entries)=>{
-      if (entries[0].isIntersecting && page < 22) {
+      if (entries[0].isIntersecting && !isMaxPage) {
         loadMorePokemons()  // 마지막 요소가 보이면 추가적으로 로드
       }
     })
