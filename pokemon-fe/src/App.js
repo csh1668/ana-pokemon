@@ -67,19 +67,20 @@ function App() {
     axios({
       url: `https://pokedex.anacnu.kr/list?page=${page}&kw=${keyWord}&kind=${option}&order=${order}`
     })
+    .then((res)=>res.data.content)
     .then((res)=>{
-      res = res.data.content;
       if (page === 0) {
         setVisiblePokemons(res)
       } else {
         setVisiblePokemons((previous)=>[...previous, ...res])
       }
-      if (visiblePokemons.length % 50 != 0) setIsMaxPage(true)
     })
     .catch((err)=>{
       console.log('API 통신 실패 : ', err)
     })
     .finally(()=>{
+      if(visiblePokemons.length % 50 != 0) setIsMaxPage(true)
+      else  setIsMaxPage(false)
       setLoading(false)
     })
   }, [page])
