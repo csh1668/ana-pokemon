@@ -12,8 +12,8 @@ import java.util.Arrays;
 @Component
 @RequiredArgsConstructor
 public class DBInitializer {
-    private final String pathPokemonData = "../pokemon_data.csv";
-    private final String pathPokemonTypeData = "../pokemon_type_data.csv";
+    private final String pathPokemonData = "/app/data/pokemon_data.csv";
+    private final String pathPokemonTypeData = "/app/data/pokemon_type_data.csv";
 
     private final PokemonService pokemonService;
     private final PokemonTypeService pokemonTypeService;

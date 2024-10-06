@@ -12,13 +12,13 @@ function PokemonDetail({pokeList}) {
   const token = localStorage.getItem("accessToken") // JWT Token
   useEffect(()=>{
     axios({
-      url: `/proxy/get/${id}`
+      url: `https://pokedex.anacnu.kr/get/${id}`
     })
-    .then((res)=>res.data)
     .then((res)=>{
-      setPokemon(res)
-      setVote(res.vote)
-      setTypeArr(res.types)
+      res = res.data;
+      setPokemon(res);
+      setVote(res.vote);
+      setTypeArr(res.types);
     })
   }, [])
 
@@ -32,12 +32,11 @@ function PokemonDetail({pokeList}) {
       headers: {
         Authorization: `Bearer ${token}`
       },
-      url: `/proxy/vote/${pokemon.name}`,
+      url: `https://pokedex.anacnu.kr/vote/${pokemon.name}`,
       method: "POST"
     })
-    .then((res)=>res.data)
     .then((res)=>{
-      setVote(res)
+      setVote(res.data)
       alert('투표를 완료했습니다.')
     })
     .catch((err)=>{

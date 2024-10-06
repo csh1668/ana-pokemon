@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  moyamo:
+    build:
+      context: ./pokemon-fe
+      dockerfile: Dockerfile
+    ports:
+      - "8091:8091"
+    networks:
+      - dmoj_nginx_network
+  pokedex:
+    build:
+      context: ./pokemon-be
+      dockerfile: Dockerfile
+    ports:
+      - "8092:8092"
+    networks:
+      - dmoj_nginx_network
+    volumes:
+      - /home/ana/ana-pokemon/pokemon-be/data:/app/data
+      
+networks:
+  dmoj_nginx_network:
+    external: true

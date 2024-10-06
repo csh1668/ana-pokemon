@@ -30,12 +30,11 @@ function App() {
       headers: {
         Authorization: `Bearer ${token}`
       },
-      url: '/proxy/me'
+      url: 'https://pokedex.anacnu.kr/me'
     })
-    .then((res)=>res.data)
     .then((res)=>{
       setIsLogin(true)
-      setMemberId(res)
+      setMemberId(res.data)
     })
     .catch((err)=>{
 
@@ -45,10 +44,10 @@ function App() {
   // Backend API ('/list') 를 통한 초기 데이터 획득 및 검색 시 데이터 획득
   useEffect(()=>{
     axios({
-      url: `/proxy/list?page=${page}&kw=${keyWord}&kind=${option}&order=${order}`
+      url: `https://pokedex.anacnu.kr/list?page=${page}&kw=${keyWord}&kind=${option}&order=${order}`
     })
-    .then((res)=>res.data.content)
     .then((res)=>{
+      res = res.data.content
       console.log(`page : ${page} kw : ${keyWord} kind : ${option}`)
       setVisiblePokemons(res)
     })
@@ -60,10 +59,10 @@ function App() {
    // page가 넘어갈 때 마다 데이터를 로드하도록 함.
    useEffect(()=>{
     axios({
-      url: `/proxy/list?page=${page}&kw=${keyWord}&kind=${option}&order=${order}`
+      url: `https://pokedex.anacnu.kr/list?page=${page}&kw=${keyWord}&kind=${option}&order=${order}`
     })
-    .then((res)=>res.data.content)
     .then((res)=>{
+      res = res.data.content;
       if (page === 0) {
         setVisiblePokemons(res)
       } else {
@@ -138,7 +137,7 @@ function App() {
     // 회원가입 로직
     axios({
       method: "POST",
-      url: `/proxy/sign-up`,
+      url: `https://pokedex.anacnu.kr/sign-up`,
       data: {
         studentId: userId,
         password: password
@@ -160,14 +159,14 @@ function App() {
     // 로그인 로직 작성
     axios({
       method: "POST",
-      url: `/proxy/sign-in`,
+      url: `https://pokedex.anacnu.kr/sign-in`,
       data: {
         studentId: userId,
         password: password
       }
     })
-    .then((res)=>res.data)
     .then((res)=>{
+      res = res.data;
       console.log(res)
       console.log(`token : ${res.accessToken}`)
 
@@ -336,11 +335,11 @@ const memberInfo = () => {
         <Route path="/" element = {
           <div className="appContainer">
             {/* <button type="button" className="Button" onClick={loginPrompt}> */}
-            <button type='button' className='Button' onClick={togglePopup}>
-              {(isOpen && handleMemberInfo()) || (
-                <img src="https://cdn-icons-png.flaticon.com/512/159/159833.png" width="50" height="50"/>
+              {(isOpen && handleMemberInfo()) || ( // https://cdn-icons-png.flaticon.com/512/159/159833.png
+                <button type='button' className='Button' onClick={togglePopup}>
+                  <img src="https://i.namu.wiki/i/J-YFRHGRSfHZaBNzCNhaswI9HQurtpL7v2Vk76StYNixgwxk3uUtRQKtsuHx1zEMk3h1o66bjdJ8x8Yw5rPdosWNWnbvLGpEQhxM5K4qqhF5mWl7vhXUX9iF64tm_h5nzZIWM075FbZxzq3QvGhRfw.webp" width="72" height="72"/>
+                </button>
               )}
-            </button>
 
             <div className="searchBar">
               <select 
@@ -381,7 +380,6 @@ const memberInfo = () => {
                 className="searchButton"
               />
             </div>
-
             <div className="pokemonGridContainer">
               <div className='pokemonGrid'>
                 {visiblePokemons.map((pokemonInfo, index)=>{
