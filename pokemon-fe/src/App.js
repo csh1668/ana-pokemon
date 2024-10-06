@@ -52,7 +52,6 @@ function App() {
     })
     .then((res)=>res.data.content)
     .then((res)=>{
-      console.log(`page : ${page} kw : ${keyWord} kind : ${option}`)
       setVisiblePokemons(res)
       setPage(0)
       setIsMaxPage(false)
@@ -65,7 +64,6 @@ function App() {
 
    // page가 넘어갈 때 마다 데이터를 로드하도록 함.
    useEffect(()=>{
-    console.log(`Page. ${page} 에서 로드 시도중`)
     axios({
       url: `https://pokedex.anacnu.kr/list?page=${page}&kw=${keyWord}&kind=${option}&order=${order}`
     })
@@ -83,18 +81,14 @@ function App() {
     })
     .finally(()=>{
       setLoading(false)
-      console.log(`Loading 종료, 현재 페이지 : ${page}`)
     })
   }, [page])
 
   // 스크롤이 페이지 끝에 도달하면 추가 데이터를 로드
   const loadMorePokemons = useCallback(()=>{
-    console.log(`현재 위치 : ${page}, 로딩중? : ${loading}`)
     if (loading) {
-      console.log(`Loading 중... 현재 페이지 : ${page}`)
       return
     }
-    console.log(`Page. ${page} 에서 시도 할걸?`)
     setLoading(true)
     setPage((page)=>page+1)
   }, [page, loading])
@@ -187,8 +181,6 @@ function App() {
     })
     .then((res)=>{
       res = res.data;
-      console.log(res)
-      console.log(`token : ${res.accessToken}`)
 
       localStorage.setItem('accessToken', res.accessToken)
       setMemberId(userId)
@@ -201,7 +193,6 @@ function App() {
       alert('로그인 실패')
     })
 
-    console.log(`Id : ${userId}, Pw : ${password}`)
     setIsOpen(false) // 팝업 닫기
   }
 
@@ -354,7 +345,6 @@ const memberInfo = () => {
         {/* 메인 페이지 */}
         <Route path="/" element = {
           <div className="appContainer">
-            {/* <button type="button" className="Button" onClick={loginPrompt}> */}
               {(isOpen && handleMemberInfo()) || ( // https://cdn-icons-png.flaticon.com/512/159/159833.png
                 <button type='button' className='Button' onClick={togglePopup}>
                   <img src="https://i.namu.wiki/i/J-YFRHGRSfHZaBNzCNhaswI9HQurtpL7v2Vk76StYNixgwxk3uUtRQKtsuHx1zEMk3h1o66bjdJ8x8Yw5rPdosWNWnbvLGpEQhxM5K4qqhF5mWl7vhXUX9iF64tm_h5nzZIWM075FbZxzq3QvGhRfw.webp" width="72" height="72"/>

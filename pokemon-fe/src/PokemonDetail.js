@@ -27,7 +27,6 @@ function PokemonDetail({pokeList}) {
   }
 
   const handleVote = ()=>{
-    console.log(`token : ${token}`)
     axios({
       headers: {
         Authorization: `Bearer ${token}`
