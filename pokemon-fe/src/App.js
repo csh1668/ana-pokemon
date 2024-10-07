@@ -371,6 +371,7 @@ const memberInfo = () => {
                   placeholder="포켓몬 검색" 
                   value={keyWord}
                   onChange={(e) => setKeyWord(e.target.value)}
+                  onKeyDown={(e) => {if(e.key === 'Enter') handleClick()}}
                   className="searchInput"
                 />
               )) || (
