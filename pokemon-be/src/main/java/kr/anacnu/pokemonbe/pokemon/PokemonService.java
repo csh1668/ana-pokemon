@@ -59,17 +59,20 @@ public class PokemonService {
 
     @Transactional(readOnly = true)
     public PagedModel<PokemonDto> getPokemons(int page, String kw, PokemonSearchType searchType, boolean isAsc) {
+        var defaultSort = Sort.Order.asc("pokedexNum");
         List<Sort.Order> sorts = switch (searchType) {
-            case HEIGHT -> List.of(isAsc ? Sort.Order.asc("height") : Sort.Order.desc("height"));
-            case WEIGHT -> List.of(isAsc ? Sort.Order.asc("weight") : Sort.Order.desc("weight"));
-            case VOTE -> List.of(isAsc ? Sort.Order.asc("vote") : Sort.Order.desc("vote"));
-            default -> List.of(isAsc ? Sort.Order.asc("pokedexNum") : Sort.Order.desc("pokedexNum"));
+            case HEIGHT -> List.of(isAsc ? Sort.Order.asc("height") : Sort.Order.desc("height"), defaultSort);
+            case WEIGHT -> List.of(isAsc ? Sort.Order.asc("weight") : Sort.Order.desc("weight"), defaultSort);
+            case VOTE -> List.of(isAsc ? Sort.Order.asc("vote") : Sort.Order.desc("vote"), defaultSort);
+            default -> List.of(isAsc ? defaultSort : Sort.Order.desc("pokedexNum"));
         };
         var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by(sorts));
+
+        Specification<Pokemon> defaultSpec = Specification.where(null);
         Specification<Pokemon> spec = switch (searchType) {
-            case NAME -> nameLike(kw);
-            case TYPE -> hasType(kw);
-            default -> Specification.where(null);
+            case NAME -> kw.isEmpty() ? defaultSpec : nameLike(kw);
+            case TYPE -> kw.isEmpty() ? defaultSpec : hasType(kw);
+            default -> defaultSpec;
         };
         var ret = pokemonRepository.findAll(spec, pageable).map(PokemonDto::new);
 

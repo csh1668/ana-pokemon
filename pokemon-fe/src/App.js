@@ -371,49 +371,50 @@ const memberInfo = () => {
               </button>
             )}
 
-          <div className="searchBar">
-            <select 
-              value={option} 
-              onChange={(e) => setOption(e.target.value)}
-              className="searchSelect"
-            >
-              <option>name</option>
-              <option>type</option>
-              <option>height</option>
-              <option>weight</option>
-              <option>vote</option>
-            </select>
-            
-            {(!(option === 'height' || option === 'weight' || option === 'vote') && (
-              <input 
-                type="text" 
-                placeholder="포켓몬 검색" 
-                value={keyWord}
-                onChange={(e) => setKeyWord(e.target.value)}
-                className="searchInput"
-              />
-            )) || (
+            <div className="searchBar">
               <select 
-                value={order === 'asc' ? '오름차순' : '내림차순'}
-                onChange={(e) => { setOrder(e.target.value === '오름차순' ? 'asc' : 'desc'); }}
-                className="orderSelect"
+                value={option} 
+                onChange={(e) => setOption(e.target.value)}
+                className="searchSelect"
               >
-                <option value="오름차순">오름차순</option>
-                <option value="내림차순">내림차순</option>
+                <option>name</option>
+                <option>type</option>
+                <option>height</option>
+                <option>weight</option>
+                <option>vote</option>
               </select>
-            )}
-            
-            <input 
-              type="submit" 
-              value="검색" 
-              onClick={handleClick}
-              className="searchButton"
-            />
-          </div>
-          <div className="pokemonGridContainer">
-            <div className='pokemonGrid'>
-              {visiblePokemons.map((pokemonInfo, index)=>{
-                const pokemonId = pokemonInfo.pokedexNum
+              
+              {(!(option === 'height' || option === 'weight' || option === 'vote') && (
+                <input 
+                  type="text" 
+                  placeholder="포켓몬 검색" 
+                  value={keyWord}
+                  onChange={(e) => setKeyWord(e.target.value)}
+                  onKeyDown={(e) => {if(e.key === 'Enter') handleClick()}}
+                  className="searchInput"
+                />
+              )) || (
+                <select 
+                  value={order === 'asc' ? '오름차순' : '내림차순'}
+                  onChange={(e) => { setOrder(e.target.value === '오름차순' ? 'asc' : 'desc'); }}
+                  className="orderSelect"
+                >
+                  <option value="오름차순">오름차순</option>
+                  <option value="내림차순">내림차순</option>
+                </select>
+              )}
+              
+              <input 
+                type="submit" 
+                value="검색" 
+                onClick={handleClick}
+                className="searchButton"
+              />
+            </div>
+            <div className="pokemonGridContainer">
+              <div className='pokemonGrid'>
+                {visiblePokemons.map((pokemonInfo, index)=>{
+                  const pokemonId = pokemonInfo.pokedexNum
 
                 if (index === visiblePokemons.length - 1) {
                   return (
