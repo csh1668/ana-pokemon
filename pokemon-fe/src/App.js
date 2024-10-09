@@ -270,6 +270,7 @@ const signInComp = () => {
               onChange={(e) => setUserId(e.target.value)}
               required
               className="inputField"
+              id='IdForLogin'
             />
           </label>
           <br />
@@ -281,13 +282,14 @@ const signInComp = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="inputField"
+              id='PwForLogin'
             />
           </label>
           <br />
-          <button type="button" className="button-secondary" onClick={setSignMode}>
+          <button type="button" className="button-secondary" onClick={setSignMode} id='NavigateRegister'>
             회원가입
           </button>
-          <button type="submit" className="button-primary">로그인 하기</button>
+          <button type="submit" className="button-primary" id='LoginButton'>로그인 하기</button>
         </form>
       </div>
     </div>
@@ -309,6 +311,7 @@ const signUpComp = () => {
               onChange={(e) => setUserId(e.target.value)}
               required
               className="inputField"
+              id='IdForRegister'
             />
           </label>
           <br />
@@ -320,6 +323,7 @@ const signUpComp = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="inputField"
+              id='PwForRegister'
             />
           </label>
           <br />
@@ -331,13 +335,14 @@ const signUpComp = () => {
               onChange={(e) => setPassword2(e.target.value)}
               required
               className="inputField"
+              id='PwForRegitserCheck'
             />
           </label>
           <br />
-          <button type="button" className="button-secondary" onClick={setSignMode}>
+          <button type="button" className="button-secondary" onClick={setSignMode} id='NavigateLogin'>
             로그인
           </button>
-          <button type="submit" className="button-primary">회원가입 하기</button>
+          <button type="submit" className="button-primary" id='RegisterButton'>회원가입 하기</button>
         </form>
       </div>
     </div>
