@@ -25,9 +25,10 @@ function App() {
   const [order, setOrder] = useState('asc') // 정렬 기준
 
   const [isMaxPage, setIsMaxPage] = useState(false) // 마지막 페이지 확인
-  const [loading, setLoading] = useState(false) // 로딩 상태 관리
+  const [pageLoading, setPageLoading] = useState(false) // 페이지 로딩 상태 관리
 
   const navigate = useNavigate()  // 웹 링크
+  const [detailLoading, setDetailLoading] = useState(false)  // pokeDetail 로딩 상태 관리
 
   // 페이지 로드 할 때마다 JWT Token으로 로그인 여부 확인 
   useEffect(()=>{
@@ -83,18 +84,18 @@ function App() {
     .finally(()=>{
       if(visiblePokemons.length % 50 != 0) setIsMaxPage(true)
       else  setIsMaxPage(false)
-      setLoading(false)
+      setPageLoading(false)
     })
   }, [page])
 
   // 스크롤이 페이지 끝에 도달하면 추가 데이터를 로드
   const loadMorePokemons = useCallback(()=>{
-    if (loading) {
+    if (pageLoading) {
       return
     }
-    setLoading(true)
+    setPageLoading(true)
     setPage((page)=>page+1)
-  }, [page, loading])
+  }, [page, pageLoading])
 
   // IntersectionObserver를 이용한 무한 스크롤 구현
   const lastPokemonElementRef = useCallback((node)=>{
@@ -220,7 +221,7 @@ function App() {
 
   // PokeDetail 로딩
   const handleDetailClick = (pokemonId) => {
-    setLoading(true);
+    setDetailLoading(true);
     axios({
       url: `https://pokedex.anacnu.kr/get/${pokemonId}`
     })
@@ -232,7 +233,7 @@ function App() {
       console.error('API 요청 실패:', err);
     })
     .finally(() => {
-      setLoading(false);
+      setDetailLoading(false);
     });
   }
 
@@ -365,6 +366,12 @@ const memberInfo = () => {
       {/* 메인 페이지 */}
       <Route path="/" element = {
         <div className="appContainer">
+            {detailLoading && (
+              <div className='loadingOverlay'>
+                <img src="/spinner.gif" alt='Loading' className='loadingImage'></img>
+              </div>
+            )}
+
             {(isOpen && handleMemberInfo()) || ( // https://cdn-icons-png.flaticon.com/512/159/159833.png
               <button type='button' className='Button' onClick={togglePopup}>
                 <img src="https://i.namu.wiki/i/J-YFRHGRSfHZaBNzCNhaswI9HQurtpL7v2Vk76StYNixgwxk3uUtRQKtsuHx1zEMk3h1o66bjdJ8x8Yw5rPdosWNWnbvLGpEQhxM5K4qqhF5mWl7vhXUX9iF64tm_h5nzZIWM075FbZxzq3QvGhRfw.webp" width="72" height="72"/>
