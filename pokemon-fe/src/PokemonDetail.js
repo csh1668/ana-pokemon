@@ -1,26 +1,29 @@
 import './App.js'
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './PokemonDetail.css'
 
 function PokemonDetail({pokeList}) {
-  const [pokemon, setPokemon] = useState([])  // 포켓몬 리스트에서 해당 ID 찾기
-  const [vote, setVote] = useState(0) // 포켓몬의 vote 변수
-  const [typeArr, setTypeArr] = useState([])  // 포켓몬의 type 변수
+  const location = useLocation()
+  const [pokemon, setPokemon] = useState(location.state?.pokemonData || [])  // 포켓몬 리스트에서 해당 ID 찾기
+  const [vote, setVote] = useState(pokemon.vote || 0) // 포켓몬의 vote 변수
+  const [typeArr, setTypeArr] = useState(pokemon.types || [])  // 포켓몬의 type 변수
   const { id } = useParams()  // URL의 id 파라미터 가져오기
   const token = localStorage.getItem("accessToken") // JWT Token
-  useEffect(()=>{
-    axios({
-      url: `https://pokedex.anacnu.kr/get/${id}`
-    })
-    .then((res)=>{
-      res = res.data;
-      setPokemon(res);
-      setVote(res.vote);
-      setTypeArr(res.types);
-    })
-  }, [])
+
+  useEffect(() => {
+    if (!location.state?.pokemonData) {
+      axios.get(`https://pokedex.anacnu.kr/get/${id}`)
+        .then((res) => {
+          const data = res.data;
+          setPokemon(data);
+          setVote(data.vote);
+          setTypeArr(data.types);
+        })
+        .catch((err) => console.error('Error fetching Pokémon data:', err));
+    }
+  }, [id, location.state]);
 
   if (!pokemon) {
     return <div>포켓몬 정보를 찾을 수 없습니다.</div>;

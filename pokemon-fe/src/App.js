@@ -1,6 +1,6 @@
 import './App.css'
 import React, { useEffect, useState, useRef, useCallback } from 'react'
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom'
 import PokemonDetail from './PokemonDetail.js'
 import axios from 'axios'
 
@@ -26,6 +26,8 @@ function App() {
 
   const [isMaxPage, setIsMaxPage] = useState(false) // 마지막 페이지 확인
   const [loading, setLoading] = useState(false) // 로딩 상태 관리
+
+  const navigate = useNavigate()  // 웹 링크
 
   // 페이지 로드 할 때마다 JWT Token으로 로그인 여부 확인 
   useEffect(()=>{
@@ -216,6 +218,24 @@ function App() {
     togglePopup()
   }
 
+  // PokeDetail 로딩
+  const handleDetailClick = (pokemonId) => {
+    setLoading(true);
+    axios({
+      url: `https://pokedex.anacnu.kr/get/${pokemonId}`
+    })
+    .then((res)=>res.data)
+    .then((res) => {
+      navigate(`/pokemon/${pokemonId}`, {state: {pokemonData: res}});
+    })
+    .catch((err) => {
+      console.error('API 요청 실패:', err);
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+  }
+
   // 로그인 및 회원정보 창 
   const handleMemberInfo = () => {
     if (isLogin) {
@@ -341,93 +361,94 @@ const memberInfo = () => {
 }
 
   return (
-    <Router>
-      <Routes>
-        {/* 메인 페이지 */}
-        <Route path="/" element = {
-          <div className="appContainer">
-              {(isOpen && handleMemberInfo()) || ( // https://cdn-icons-png.flaticon.com/512/159/159833.png
-                <button type='button' className='Button' onClick={togglePopup}>
-                  <img src="https://i.namu.wiki/i/J-YFRHGRSfHZaBNzCNhaswI9HQurtpL7v2Vk76StYNixgwxk3uUtRQKtsuHx1zEMk3h1o66bjdJ8x8Yw5rPdosWNWnbvLGpEQhxM5K4qqhF5mWl7vhXUX9iF64tm_h5nzZIWM075FbZxzq3QvGhRfw.webp" width="72" height="72"/>
-                </button>
-              )}
+    <Routes>
+      {/* 메인 페이지 */}
+      <Route path="/" element = {
+        <div className="appContainer">
+            {(isOpen && handleMemberInfo()) || ( // https://cdn-icons-png.flaticon.com/512/159/159833.png
+              <button type='button' className='Button' onClick={togglePopup}>
+                <img src="https://i.namu.wiki/i/J-YFRHGRSfHZaBNzCNhaswI9HQurtpL7v2Vk76StYNixgwxk3uUtRQKtsuHx1zEMk3h1o66bjdJ8x8Yw5rPdosWNWnbvLGpEQhxM5K4qqhF5mWl7vhXUX9iF64tm_h5nzZIWM075FbZxzq3QvGhRfw.webp" width="72" height="72"/>
+              </button>
+            )}
 
-            <div className="searchBar">
-              <select 
-                value={option} 
-                onChange={(e) => setOption(e.target.value)}
-                className="searchSelect"
-              >
-                <option>name</option>
-                <option>type</option>
-                <option>height</option>
-                <option>weight</option>
-                <option>vote</option>
-              </select>
-              
-              {(!(option === 'height' || option === 'weight' || option === 'vote') && (
-                <input 
-                  type="text" 
-                  placeholder="포켓몬 검색" 
-                  value={keyWord}
-                  onChange={(e) => setKeyWord(e.target.value)}
-                  className="searchInput"
-                />
-              )) || (
-                <select 
-                  value={order === 'asc' ? '오름차순' : '내림차순'}
-                  onChange={(e) => { setOrder(e.target.value === '오름차순' ? 'asc' : 'desc'); }}
-                  className="orderSelect"
-                >
-                  <option value="오름차순">오름차순</option>
-                  <option value="내림차순">내림차순</option>
-                </select>
-              )}
-              
+          <div className="searchBar">
+            <select 
+              value={option} 
+              onChange={(e) => setOption(e.target.value)}
+              className="searchSelect"
+            >
+              <option>name</option>
+              <option>type</option>
+              <option>height</option>
+              <option>weight</option>
+              <option>vote</option>
+            </select>
+            
+            {(!(option === 'height' || option === 'weight' || option === 'vote') && (
               <input 
-                type="submit" 
-                value="검색" 
-                onClick={handleClick}
-                className="searchButton"
+                type="text" 
+                placeholder="포켓몬 검색" 
+                value={keyWord}
+                onChange={(e) => setKeyWord(e.target.value)}
+                className="searchInput"
               />
-            </div>
-            <div className="pokemonGridContainer">
-              <div className='pokemonGrid'>
-                {visiblePokemons.map((pokemonInfo, index)=>{
-                  const pokemonId = pokemonInfo.pokedexNum
+            )) || (
+              <select 
+                value={order === 'asc' ? '오름차순' : '내림차순'}
+                onChange={(e) => { setOrder(e.target.value === '오름차순' ? 'asc' : 'desc'); }}
+                className="orderSelect"
+              >
+                <option value="오름차순">오름차순</option>
+                <option value="내림차순">내림차순</option>
+              </select>
+            )}
+            
+            <input 
+              type="submit" 
+              value="검색" 
+              onClick={handleClick}
+              className="searchButton"
+            />
+          </div>
+          <div className="pokemonGridContainer">
+            <div className='pokemonGrid'>
+              {visiblePokemons.map((pokemonInfo, index)=>{
+                const pokemonId = pokemonInfo.pokedexNum
 
-                  if (index === visiblePokemons.length - 1) {
-                    return (
-                      <Link to={`/pokemon/${pokemonId}`} key={pokemonInfo.pokedexNum}>
-                        <div ref={lastPokemonElementRef} className="pokemonCard">
-                          <img src={pokemonInfo.gifUrl || pokemonInfo.imageUrl} width="100" height="100" alt={pokemonInfo.name}/>
-                          <p className="pokemonId">No.{'0'.repeat(4 - String(pokemonInfo.pokedexNum).length) + pokemonInfo.pokedexNum}</p>
-                          <p className="pokemonName">{pokemonInfo.name}</p>
-                        </div>
-                      </Link>
-                    )
-                  } else {
-                    return (
-                      <Link to={`/pokemon/${pokemonId}`} key={pokemonInfo.pokedexNum}>
-                        <div className="pokemonCard">
-                          <img src={pokemonInfo.gifUrl || pokemonInfo.imageUrl} width="100" height="100" alt={pokemonInfo.name}/>
-                          <p className="pokemonId">No.{'0'.repeat(4 - String(pokemonInfo.pokedexNum).length) + pokemonInfo.pokedexNum}</p>
-                          <p className="pokemonName">{pokemonInfo.name}</p>
-                        </div>
-                      </Link>
-                    )
-                  }
-                })}
-              </div>
+                if (index === visiblePokemons.length - 1) {
+                  return (
+                    <div 
+                      ref={lastPokemonElementRef} 
+                      className="pokemonCard"
+                      key={pokemonInfo.pokedexNum}
+                      onClick={()=>handleDetailClick(pokemonInfo.pokedexNum)}>
+                      <img src={pokemonInfo.gifUrl || pokemonInfo.imageUrl} width="100" height="100" alt={pokemonInfo.name}/>
+                      <p className="pokemonId">No.{'0'.repeat(4 - String(pokemonInfo.pokedexNum).length) + pokemonInfo.pokedexNum}</p>
+                      <p className="pokemonName">{pokemonInfo.name}</p>
+                    </div>
+                  )
+                } else {
+                  return (
+                    <div 
+                      className="pokemonCard"
+                      key={pokemonInfo.pokedexNum}
+                      onClick={()=>handleDetailClick(pokemonInfo.pokedexNum)}>
+                      <img src={pokemonInfo.gifUrl || pokemonInfo.imageUrl} width="100" height="100" alt={pokemonInfo.name}/>
+                      <p className="pokemonId">No.{'0'.repeat(4 - String(pokemonInfo.pokedexNum).length) + pokemonInfo.pokedexNum}</p>
+                      <p className="pokemonName">{pokemonInfo.name}</p>
+                    </div>
+                  )
+                }
+              })}
             </div>
           </div>
-        }>
-        </Route>
+        </div>
+      }>
+      </Route>
 
-        {/* 포켓몬 상세 페이지 */}
-        <Route path="/pokemon/:id" element={<PokemonDetail pokeList = {visiblePokemons}/>}></Route>
-      </Routes>
-    </Router>
+      {/* 포켓몬 상세 페이지 */}
+      <Route path="/pokemon/:id" element={<PokemonDetail pokeList = {visiblePokemons}/>}></Route>
+    </Routes>
   )
 }
 
